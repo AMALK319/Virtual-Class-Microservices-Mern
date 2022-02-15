@@ -12,21 +12,22 @@ const CourseSchema = new mongoose.Schema(
       trim: true,
       maxlength: 500,
     },
-    picture: {
-      type: String,
+    pictures: {
+      type: [String],
     },
     video: {
       type: String,
     },
-    professors: {
-        type: [String]
-    },
+    instructors: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    categories: [{ type: Schema.Types.String, ref: "Category" }],
     followers: {
         type: [String]
     },
     likers: {
       type: [String],
-      required: true,
+    },
+    rating: {
+      type: Number,
     },
     comments: {
       type: [
@@ -36,8 +37,7 @@ const CourseSchema = new mongoose.Schema(
           text: String,
           timestamp: Number,
         }
-      ],
-      required: true,
+      ]
     },
   },
   {
