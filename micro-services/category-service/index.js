@@ -23,7 +23,7 @@ const start = async () => {
 
     try {
         await server.listen(port, () => { console.log(`Server started on ${port}`) });
-        await eureka.registerWithEureka('auth-service', port);
+        await eureka.registerWithEureka('categories-service', port);
         //connectDB();
     } catch (error) {
         console.log(error);
