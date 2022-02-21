@@ -1,14 +1,14 @@
-/* module.exports = {
-    mongoURI : 'mongodb+srv://amal:amal@startercluster.ljijw.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
-} */
 
 const mongoose = require('mongoose');
+const URI = process.env.URI_DB;
+require('dotenv').config({ path: '../config/.env' });
+
 
 const connectDB = async () => {
     try {
         await mongoose
             .connect(
-                "mongodb://localhost:27017/virtual-class-db-auth",
+                URI,
                 {
                     useNewUrlParser: true,
                     useUnifiedTopology: true
