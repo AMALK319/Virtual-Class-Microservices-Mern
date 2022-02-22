@@ -1,24 +1,22 @@
 const mongoose = require('mongoose');
 const { isEmail } = require('validator');
-const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema(
   {
 
     first_name: {
-      type: String,
-      lowercase: true,
+    type: String,
+    required: true,
     },
     last_name: {
       type: String,
-      lowercase: true,
+      required: true,
     },
 
     email: {
       type: String,
       required: true,
       validate: [isEmail],
-      lowercase: true,
       unique: true,
       trim: true,
     },
@@ -31,7 +29,8 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      required: true
+      required: true,
+      enum: ["professor", "student", "admin"]
     }
 
 

@@ -10,11 +10,14 @@ const server = express();
 
 //constantes utiles
 const port = process.env.PORT || 8000;
+const authRoutes = require('./src/routes/auth.routes');
 
 
 //middelwares
 server.use(bodyParser.json());
 server.use(express.urlencoded({ extended: true }));
+
+server.use('/api/auth-service', authRoutes);
 
 
 
