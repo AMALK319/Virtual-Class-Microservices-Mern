@@ -1,8 +1,8 @@
 const User = require('../models/User');
 const Student = require('../models/Student');
 const Professor = require('../models/Professor');
-const bcrypt = require('bcrypt');
 const { createToken, encryptPassword } = require('../utils');
+const { validationResult } = require('express-validator/check');
 
 
 const createNewUser = async (data) => {
@@ -17,10 +17,16 @@ const createNewUser = async (data) => {
 module.exports.register = async (req, res) => {
     try {
 
+        const errors = validationResult(req); // Finds the validation errors in this request and wraps them in an object with handy functions
+
+        if (!errors.isEmpty()) {
+            res.status(422).json({ errors: errors.array() });
+            return;
+        }
+
         const reqData = req.body;
         const { first_name, last_name, email, password, role, status } = reqData;
-        //Validate user input.
-
+        
 
         // separation of the register logic since the user can be connected with same email as student oo as professor
         if (role == 'student') {
@@ -94,16 +100,6 @@ module.exports.register = async (req, res) => {
         }
 
 
-
-
-
-
-
-
-
-
-
-
     } catch (error) {
         console.log(error);
     }
@@ -111,7 +107,7 @@ module.exports.register = async (req, res) => {
 }
 
 module.exports.login = async (req, res) => {
-   
+
 }
 
 

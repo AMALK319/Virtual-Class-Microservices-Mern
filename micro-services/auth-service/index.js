@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+//const expressValidator = require('express-validator');
 
 const { connectDB } = require('./config/db-config');
 const eureka = require('../../eureka-helper/index');
@@ -16,6 +17,7 @@ const authRoutes = require('./src/routes/auth.routes');
 //middelwares
 server.use(bodyParser.json());
 server.use(express.urlencoded({ extended: true }));
+//server.use(expressValidator())
 
 server.use('/api/auth-service', authRoutes);
 

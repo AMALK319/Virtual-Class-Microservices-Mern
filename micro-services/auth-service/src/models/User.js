@@ -5,26 +5,22 @@ const userSchema = new mongoose.Schema(
   {
 
     first_name: {
-    type: String,
-    required: true,
+      type: String,
+     
     },
     last_name: {
       type: String,
-      required: true,
+      
     },
 
     email: {
       type: String,
-      required: true,
-      validate: [isEmail],
       unique: true,
       trim: true,
     },
     password: {
       type: String,
-      required: true,
-      max: 1024,
-      minlength: 6
+     
     },
 
     role: {
