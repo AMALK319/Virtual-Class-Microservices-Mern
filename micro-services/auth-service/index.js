@@ -19,7 +19,7 @@ server.use(bodyParser.json());
 server.use(express.urlencoded({ extended: true }));
 //server.use(expressValidator())
 
-server.use('/api/auth-service', authRoutes);
+server.use('/api', authRoutes);
 
 
 

@@ -2,7 +2,10 @@ const User = require('../models/User');
 const Student = require('../models/Student');
 const Professor = require('../models/Professor');
 const { createToken, encryptPassword } = require('../utils');
-const { validationResult } = require('express-validator/check');
+const { validationResult } = require('express-validator');
+const jwt = require("jsonwebtoken");
+const bcrypt = require('bcrypt');
+
 
 
 const createNewUser = async (data) => {
@@ -24,9 +27,8 @@ module.exports.register = async (req, res) => {
             return;
         }
 
-        const reqData = req.body;
-        const { first_name, last_name, email, password, role, status } = reqData;
-        
+        const { first_name, last_name, email, password, role, speciality } = req.body;
+
 
         // separation of the register logic since the user can be connected with same email as student oo as professor
         if (role == 'student') {
@@ -35,7 +37,7 @@ module.exports.register = async (req, res) => {
             const oldStudent = await Student.findOne({ user });
 
             // check if student exist
-            if (oldStudent) { return res.status(409).send("Student Already Exist. Please Login"); }
+            if (oldStudent) { return res.status(409).json({"message":"Student Already Exist. Please Login"}); }
 
             // check if the user exist as professor
             else if (user && !oldStudent) {
@@ -70,7 +72,7 @@ module.exports.register = async (req, res) => {
             const oldProfessor = await Professor.findOne({ user });
 
             // check if professor exist
-            if (oldProfessor) { return res.status(409).send("Professor Already Exist. Please Login"); }
+            if (oldProfessor) { return res.status(409).json({"message":"Student Already Exist. Please Login"}); }
             // check if the user exist as student
             else if (user && !oldProfessor) {
 
@@ -91,7 +93,11 @@ module.exports.register = async (req, res) => {
                         password: encryptedPassword,
                         role
                     })
-                await Professor.createProfessor({ user });
+                const data = {
+                    user, 
+                    speciality
+                }
+                await Professor.createProfessor(data);
                 res.status(201).json({
                     'message': 'New User and Professor are created.'
                 });
@@ -106,11 +112,49 @@ module.exports.register = async (req, res) => {
 
 }
 
-module.exports.login = async (req, res) => {
 
+module.exports.login = async (req, res) => {
+    /* try {
+
+        const { email, password } = req.body;
+        const user = await User.login(email, password);
+        const token = createToken(user._id);
+        res.cookie('jwt', token, { httpOnly: true });
+        res.status(200).json({ "message": 'User logged in' });
+    } catch (error) {
+        console.log(error);
+
+
+    } */
+    const errors = validationResult(req); // Finds the validation errors in this request and wraps them in an object with handy functions
+
+    if (!errors.isEmpty()) {
+        res.status(422).json({ errors: errors.array() });
+        return;
+    }
+
+    const { login, password } = req.body;
+    const user = await User.findOne({ login });
+    if (!user) {
+        return res.json({ message: "User doesn't exist" });
+    } else {
+        const verifiedPwd = await bcrypt.compare(password, user.password);
+        if (!verifiedPwd) {
+            return res.json({ message: "Password Incorrect" });
+        }
+        const payload = {
+            login,
+            name: user.first_name + user.last_name
+        };
+        jwt.sign(payload, "secret", (err, token) => {
+            if (err) console.log(err);
+            else return res.json({ token: token });
+        });
+    }
 }
 
 
 module.exports.logout = async (req, res) => {
-
+    /*  res.cookie('jwt', '', { maxAge: 1 });
+     res.json({ "message" : "logged out"}); */
 }

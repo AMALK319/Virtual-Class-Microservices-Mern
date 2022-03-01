@@ -1,4 +1,4 @@
-const { body } = require('express-validator/check');
+const { body } = require('express-validator');
 
 exports.validate = (method) => {
   switch (method) {
@@ -8,16 +8,26 @@ exports.validate = (method) => {
           body('first_name', 'First Name doesn\'t exists').exists(),
           body('last_name', 'Last Name doesn\'t exists').exists(),
           body('email', 'Invalid email').exists().isEmail(),
-          body('password', 'Password should be combination of one uppercase , one lower case, one special char, one digit and min 6')
+         /*  body('password', 'Password should be combination of one uppercase , one lower case, one special char, one digit and min 6')
             .exists()
             .isLength({ min: 6 })
             .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{6,}$/, "i"),
           body(
-            'passwordConfirmation',
+            'password_confirmation',
             'Password Confirmation must have the same value as the password field',
           )
             .exists()
-            .custom((value, { req }) => value === req.body.password),
+            .custom((value, { req }) => value === req.body.password), */
+
+        ]
+      }
+      
+      case 'login':
+      {
+        return [
+          body('login', 'Invalid login').exists().isEmail(),
+          body('password', 'Password doesn\'t exists').exists(),
+         
 
         ]
       }

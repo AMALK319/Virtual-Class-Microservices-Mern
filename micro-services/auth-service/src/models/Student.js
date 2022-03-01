@@ -13,17 +13,8 @@ const studentSchema = new mongoose.Schema(
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
 
 studentSchema.statics.createStudent = async function (data) {
-  const { user } = data;
-
-
-  const student = await this.create(
-    {
-      user,
-      
-    })
-
-  student.user = user;
-
+ 
+  const student = await this.create(data)
   return student;
 
 };
