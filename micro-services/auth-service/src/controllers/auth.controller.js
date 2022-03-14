@@ -6,8 +6,7 @@ const { validationResult } = require('express-validator');
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 
-
-
+const maxAge = 3 * 24 * 60 * 60 * 1000;
 const createNewUser = async (data) => {
     const user = await User.create(data);
     return user;
@@ -42,6 +41,9 @@ module.exports.register = async (req, res) => {
             // check if the user exist as professor
             else if (user && !oldStudent) {
 
+                await user.updateOne({
+                    role: [user.role[0], role[0]]
+                }, { upsert: true });
                 await Student.createStudent({ user });
                 res.status(201).json({
                     'message': 'New Student is created.'
@@ -75,7 +77,9 @@ module.exports.register = async (req, res) => {
             if (oldProfessor) { return res.status(409).json({"message":"Student Already Exist. Please Login"}); }
             // check if the user exist as student
             else if (user && !oldProfessor) {
-
+                await user.updateOne({
+                    role: [user.role[0], role[0]]
+                }, { upsert: true });
                 await Professor.createProfessor({ user });
                 res.status(201).json({
                     'message': 'New Professor is created.'
@@ -146,10 +150,11 @@ module.exports.login = async (req, res) => {
             login,
             name: user.first_name + user.last_name
         };
-        jwt.sign(payload, "secret", (err, token) => {
+        jwt.sign(payload, process.env.TOKEN_SECRET, { expiresIn: maxAge },(err, token) => {
             if (err) console.log(err);
-            else return res.json({ token: token });
+            else return res.status(200).json({ "message": 'User logged in', "token": token });;
         });
+        
     }
 }
 

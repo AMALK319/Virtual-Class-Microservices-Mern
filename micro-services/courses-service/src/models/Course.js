@@ -18,16 +18,16 @@ const CourseSchema = new mongoose.Schema(
     video: {
       type: String,
     },
-    instructors: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    instructors: [{ type: Schema.Types.ObjectId, ref: "Professor" }],
     categories: [{ type: Schema.Types.String, ref: "Category" }],
     followers: {
         type: [String]
     },
-    likers: {
-      type: [String],
-    },
-    rating: {
-      type: Number,
+    rate: {
+      type: {
+        rate: Number,
+        notes: Number
+      },
     },
     comments: {
       type: [
