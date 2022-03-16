@@ -118,18 +118,7 @@ module.exports.register = async (req, res) => {
 
 
 module.exports.login = async (req, res) => {
-    /* try {
-
-        const { email, password } = req.body;
-        const user = await User.login(email, password);
-        const token = createToken(user._id);
-        res.cookie('jwt', token, { httpOnly: true });
-        res.status(200).json({ "message": 'User logged in' });
-    } catch (error) {
-        console.log(error);
-
-
-    } */
+   
     const errors = validationResult(req); // Finds the validation errors in this request and wraps them in an object with handy functions
 
     if (!errors.isEmpty()) {
@@ -137,22 +126,26 @@ module.exports.login = async (req, res) => {
         return;
     }
 
-    const { login, password } = req.body;
-    const user = await User.findOne({ login });
+    const email = req.body.login;
+    const pwd = req.body.password;
+    const user = await User.findOne({email});
+    const { password, ...userWithoutPassword } = user;
     if (!user) {
         return res.json({ message: "User doesn't exist" });
     } else {
-        const verifiedPwd = await bcrypt.compare(password, user.password);
+        const verifiedPwd = await bcrypt.compare(pwd, user.password);
         if (!verifiedPwd) {
             return res.json({ message: "Password Incorrect" });
         }
+        const id = user._id.toJSON();
         const payload = {
             login,
             name: user.first_name + user.last_name
         };
         jwt.sign(payload, process.env.TOKEN_SECRET, { expiresIn: maxAge },(err, token) => {
             if (err) console.log(err);
-            else return res.status(200).json({ "message": 'User logged in', "token": token });;
+            else 
+               return res.status(200).json({ "message": 'User logged in', "user": {...userWithoutPassword}._doc, "token": token });
         });
         
     }

@@ -13,7 +13,9 @@ const server = express();
 const port = process.env.PORT || 8000;
 const authRoutes = require('./src/routes/auth.routes');
 const userRoutes = require('./src/routes/user.routes');
-const auth = require('./src/middlewares/auth.middleware');
+const { authenticate } = require('./src/middlewares/auth.middleware');
+const { permit } = require('./src/middlewares/auth.middleware');
+
 
 
 //middelwares
@@ -21,8 +23,10 @@ server.use(bodyParser.json());
 server.use(express.urlencoded({ extended: true }));
 //server.use(expressValidator())
 
+
 server.use('/api', authRoutes);
-server.use('/api/users',auth.authenticateToken, userRoutes);
+server.use('/api/users', authenticate);
+server.use('/api/users', permit('admin'), userRoutes);
 
 
 

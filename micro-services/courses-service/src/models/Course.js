@@ -29,6 +29,9 @@ const CourseSchema = new mongoose.Schema(
         notes: Number
       },
     },
+    price: {
+      type: String
+    },
     comments: {
       type: [
         {
