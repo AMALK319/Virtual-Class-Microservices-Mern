@@ -5,8 +5,8 @@ exports.validate = (method) => {
     case 'register':
       {
         return [
-          body('first_name', 'First Name doesn\'t exists').exists(),
-          body('last_name', 'Last Name doesn\'t exists').exists(),
+          body('firstName', 'First Name doesn\'t exists').exists(),
+          body('lastName', 'Last Name doesn\'t exists').exists(),
           body('email', 'Invalid email').exists().isEmail(),
          /*  body('password', 'Password should be combination of one uppercase , one lower case, one special char, one digit and min 6')
             .exists()
@@ -25,7 +25,7 @@ exports.validate = (method) => {
       case 'login':
       {
         return [
-          body('login', 'Invalid login').exists().isEmail(),
+          body('email', 'Invalid email').exists().isEmail(),
           body('password', 'Password doesn\'t exists').exists(),
          
 

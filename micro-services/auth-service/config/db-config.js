@@ -8,7 +8,7 @@ const connectDB = async () => {
     try {
         await mongoose
             .connect(
-                "mongodb://localhost:27017/virtual-class-db-auth",
+                "mongodb://localhost:27017/virtual-class-db",
                 {
                     useNewUrlParser: true,
                     useUnifiedTopology: true

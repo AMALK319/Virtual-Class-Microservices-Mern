@@ -17,7 +17,8 @@ module.exports.authenticate = (req, res, next) => {
                 res.locals.user = null;
                 res.status(401).json({ "message": "unauthorized" });
             } else {
-                let user = await User.findById(decodedToken.id);
+                email = decodedToken.email;
+                let user = await User.findOne({email});
                 req.user = user;
                 res.locals.user = user;
                 next();

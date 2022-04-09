@@ -26,7 +26,7 @@ module.exports.register = async (req, res) => {
             return;
         }
 
-        const { first_name, last_name, email, password, role, speciality } = req.body;
+        const { firstName, lastName, email, password, role, speciality } = req.body;
 
 
         // separation of the register logic since the user can be connected with same email as student oo as professor
@@ -36,7 +36,7 @@ module.exports.register = async (req, res) => {
             const oldStudent = await Student.findOne({ user });
 
             // check if student exist
-            if (oldStudent) { return res.status(409).json({"message":"Student Already Exist. Please Login"}); }
+            if (oldStudent) { return res.status(409).json({ "message": "Student Already Exist. Please Login" }); }
 
             // check if the user exist as professor
             else if (user && !oldStudent) {
@@ -45,9 +45,18 @@ module.exports.register = async (req, res) => {
                     role: [user.role[0], role[0]]
                 }, { upsert: true });
                 await Student.createStudent({ user });
-                res.status(201).json({
-                    'message': 'New Student is created.'
+                const payload = {
+                    email,
+                    name: user.firstName + user.lastName
+                };
+                jwt.sign(payload, process.env.TOKEN_SECRET, { expiresIn: maxAge }, (err, token) => {
+                    if (err) console.log(err);
+                    else
+                        return res.status(201).json({ "message": 'New Student is created.',  "token": token });
                 });
+                /* res.status(201).json({
+                    'message': 'New Student is created.'
+                }); */
 
             }
             else {
@@ -55,16 +64,23 @@ module.exports.register = async (req, res) => {
                 const encryptedPassword = await encryptPassword(password);
                 const user = await createNewUser(
                     {
-                        first_name,
-                        last_name,
+                        firstName,
+                        lastName,
                         email,
                         password: encryptedPassword,
                         role
                     })
                 await Student.createStudent({ user });
-                res.status(201).json({
-                    'message': 'New User and Student are created.'
+                const payload = {
+                    email,
+                    name: user.firstName + user.lastName
+                };
+                jwt.sign(payload, process.env.TOKEN_SECRET, { expiresIn: maxAge }, (err, token) => {
+                    if (err) console.log(err);
+                    else
+                        return res.status(201).json({ "message": 'New User and Student are created.',  "token": token });
                 });
+               
             }
 
         }
@@ -74,37 +90,52 @@ module.exports.register = async (req, res) => {
             const oldProfessor = await Professor.findOne({ user });
 
             // check if professor exist
-            if (oldProfessor) { return res.status(409).json({"message":"Student Already Exist. Please Login"}); }
+            if (oldProfessor) { return res.status(409).json({ "message": "Student Already Exist. Please Login" }); }
             // check if the user exist as student
             else if (user && !oldProfessor) {
                 await user.updateOne({
                     role: [user.role[0], role[0]]
                 }, { upsert: true });
                 await Professor.createProfessor({ user });
-                res.status(201).json({
-                    'message': 'New Professor is created.'
+                const payload = {
+                    email,
+                    name: user.firstName + user.lastName
+                };
+                jwt.sign(payload, process.env.TOKEN_SECRET, { expiresIn: maxAge }, (err, token) => {
+                    if (err) console.log(err);
+                    else
+                        return res.status(201).json({ "message": 'New Professor is created.',  "token": token });
                 });
-
+               /*  res.status(201).json({
+                    'message': 'New Professor is created.'
+                }); */
             }
             else {
                 //Encrypt the user password.
                 const encryptedPassword = await encryptPassword(password);
                 const user = await createNewUser(
                     {
-                        first_name,
-                        last_name,
+                        firstName,
+                        lastName,
                         email,
                         password: encryptedPassword,
                         role
                     })
                 const data = {
-                    user, 
+                    user,
                     speciality
                 }
                 await Professor.createProfessor(data);
-                res.status(201).json({
-                    'message': 'New User and Professor are created.'
+                const payload = {
+                    email,
+                    name: user.firstName + user.lastName
+                };
+                jwt.sign(payload, process.env.TOKEN_SECRET, { expiresIn: maxAge }, (err, token) => {
+                    if (err) console.log(err);
+                    else
+                        return res.status(201).json({ "message": 'New User and Professor are created.',  "token": token });
                 });
+               
             }
 
         }
@@ -118,37 +149,41 @@ module.exports.register = async (req, res) => {
 
 
 module.exports.login = async (req, res) => {
-   
+
     const errors = validationResult(req); // Finds the validation errors in this request and wraps them in an object with handy functions
 
     if (!errors.isEmpty()) {
         res.status(422).json({ errors: errors.array() });
         return;
     }
-
-    const email = req.body.login;
-    const pwd = req.body.password;
-    const user = await User.findOne({email});
-    const { password, ...userWithoutPassword } = user;
-    if (!user) {
-        return res.json({ message: "User doesn't exist" });
-    } else {
+    try {
+        const email = req.body.email;
+        const pwd = req.body.password;
+        const choosenRole = req.body.choosenRole;
+        const user = await User.findOne({ email });
+        const { password, ...userWithoutPassword } = user;
         const verifiedPwd = await bcrypt.compare(pwd, user.password);
         if (!verifiedPwd) {
-            return res.json({ message: "Password Incorrect" });
+            return res.status(422).json({ message: "Password Incorrect" });
         }
-        const id = user._id.toJSON();
+        if( !user.role.includes(choosenRole)){
+            return res.status(422).json({ message: "Login failed" });
+        }
         const payload = {
-            login,
-            name: user.first_name + user.last_name
+            email,
+            name: user.firstName + user.lastName
         };
-        jwt.sign(payload, process.env.TOKEN_SECRET, { expiresIn: maxAge },(err, token) => {
+        jwt.sign(payload, process.env.TOKEN_SECRET, { expiresIn: maxAge }, (err, token) => {
             if (err) console.log(err);
-            else 
-               return res.status(200).json({ "message": 'User logged in', "user": {...userWithoutPassword}._doc, "token": token });
+            else
+                return res.status(200).json({ "message": 'User logged in', "user": { ...userWithoutPassword }._doc, "token": token, "choosenRole": choosenRole });
         });
-        
+    } catch (error) {
+        return res.json({ message: "User doesn't exist" }); 
+
     }
+
+
 }
 
 

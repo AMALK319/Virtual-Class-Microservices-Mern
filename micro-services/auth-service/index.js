@@ -17,6 +17,14 @@ const { authenticate } = require('./src/middlewares/auth.middleware');
 const { permit } = require('./src/middlewares/auth.middleware');
 
 
+//Cors 
+const cors=require("cors");
+const corsOptions ={
+   origin:'*', 
+   credentials:true,            //access-control-allow-credentials:true
+   optionSuccessStatus:200,
+}
+server.use(cors(corsOptions)) 
 
 //middelwares
 server.use(bodyParser.json());

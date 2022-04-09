@@ -1,11 +1,17 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 
 // juste exemple pour le test
 const CourseSchema = new mongoose.Schema(
   {
     title: {
-        type: String,
+      type: String,
+      required: true,
+    },
+    published: {
+      type: Boolean,
+      default: false
     },
     description: {
       type: String,
@@ -13,15 +19,39 @@ const CourseSchema = new mongoose.Schema(
       maxlength: 500,
     },
     pictures: {
-      type: [String],
+      type: [
+        {
+          name: String,
+          data: Buffer,
+          contentType: String
+        }
+      ],
     },
     video: {
       type: String,
     },
-    instructors: [{ type: Schema.Types.ObjectId, ref: "Professor" }],
-    categories: [{ type: Schema.Types.String, ref: "Category" }],
+    instructor: {
+      instructorId: { type: Schema.Types.ObjectId, ref: "Professor" },
+      instructorName: String,
+    },
+    collaborators: {
+      type: [
+        {
+          collaboratorId: { type: Schema.Types.ObjectId, ref: "Professor" },
+          collaboratorName: String,
+        }
+      ]
+    },
+    categories: {
+      type: [
+        {
+          categoryId: { type: Schema.Types.ObjectId, ref: "Category" },
+          categoryName: String,
+        }
+      ]
+    },
     followers: {
-        type: [String]
+      type: [String]
     },
     rate: {
       type: {
@@ -32,10 +62,18 @@ const CourseSchema = new mongoose.Schema(
     price: {
       type: String
     },
+    difficulty: {
+      type: String,
+      /* required: true, */
+      enum: ["easy", "normal", "hard"]
+    },
+    time: {
+      type: String
+    },
     comments: {
       type: [
         {
-          commenterId:String,
+          commenterId: String,
           commenterPseudo: String,
           text: String,
           timestamp: Number,
