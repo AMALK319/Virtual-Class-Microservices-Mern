@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 //const expressValidator = require('express-validator');
 
 const { connectDB } = require('./config/db-config');
-const eureka = require('../../eureka-helper/index');
+const eureka = require('eureka-helper/index');
 require('dotenv').config({ path: './config/.env' });
 
 

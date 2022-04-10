@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const { connectDB } = require('./config/db-config');
-const eureka = require('../../eureka-helper/index');
+const eureka = require('eureka-helper/index');
 require('dotenv').config({ path: './config/.env' });
 const auth = require('./src/middlewares/auth.middleware');
 
