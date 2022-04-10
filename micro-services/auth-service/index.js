@@ -33,7 +33,8 @@ server.use(express.urlencoded({ extended: true }));
 
 
 server.use('/api', authRoutes);
-server.use('/api/users', authenticate);
+/* server.use('/api/users', authenticate); */
+server.use('/api/users');
 server.use('/api/users', permit('admin'), userRoutes);
 
 
