@@ -11,7 +11,7 @@ module.exports = {
            url: `${eurekaService}/apps/${appName}`,
            body: JSON.stringify({
                instance: {
-                   hostName: `virtual-class-auth-service-api.herokuapp.com`,
+                   hostName: `${appName}.herokuapp.com`,
                    instanceId: `${appName}-${port}`,
                    vipAddress: `${appName}`,
                    app: `${appName.toUpperCase()}`,
