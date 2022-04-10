@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require("cors");
 const { connectDB } = require('./config/db-config');
-const eureka = require('eureka-helper/index');
+const eureka = require('./eureka-helper/index');
 require('dotenv').config({ path: './config/.env' });
 
 
@@ -38,8 +38,8 @@ const start = async () => {
 
     try {
         await server.listen(port, () => { console.log(`Server started on ${port}`) });
-        await eureka.registerWithEureka('courses-service', port);
-        connectDB();
+        //await eureka.registerWithEureka('courses-service', port);
+        //connectDB();
     } catch (error) {
         console.log(error);
     }
