@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 //const expressValidator = require('express-validator');
 
 const { connectDB } = require('./config/db-config');
-const eureka = require('./eureka-helper/index');
+const eureka = require('../../eureka-helper/index');
 require('dotenv').config({ path: './config/.env' });
 
 
@@ -33,8 +33,8 @@ server.use(express.urlencoded({ extended: true }));
 
 
 server.use('/api', authRoutes);
-/* server.use('/api/users', authenticate); */
-server.use('/api/users');
+server.use('/api/users', authenticate);
+/* server.use('/api/users'); */
 server.use('/api/users', permit('admin'), userRoutes);
 
 
@@ -44,8 +44,8 @@ const start = async () => {
 
     try {
         await server.listen(port, () => { console.log(`Server started on ${port}`) });
-        /* await eureka.registerWithEureka('auth-service', port);
-        connectDB(); */
+        await eureka.registerWithEureka('auth-service', port);
+        connectDB();
     } catch (error) {
         console.log(error);
     }
