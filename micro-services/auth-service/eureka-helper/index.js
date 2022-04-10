@@ -1,7 +1,7 @@
 const request = require('request');
 const ip = require('ip');
 
-const eurekaService = `http://localhost:8761/eureka`;
+const eurekaService = `https://virtual-class-eureka-service.herokuapp.com/`;
 
 module.exports = {
    registerWithEureka: (appName, port) => {
@@ -11,7 +11,7 @@ module.exports = {
            url: `${eurekaService}/apps/${appName}`,
            body: JSON.stringify({
                instance: {
-                   hostName: `localhost`,
+                   hostName: `https://virtual-class-auth-service-api.herokuapp.com/`,
                    instanceId: `${appName}-${port}`,
                    vipAddress: `${appName}`,
                    app: `${appName.toUpperCase()}`,
